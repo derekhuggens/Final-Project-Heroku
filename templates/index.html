@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Insurance Fraud Modeler</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <link rel="stylesheet" href="../static/css/style.css">
+</head>
+
+<body>
+  <!-- Navigation Bar -->
+  <div class="topnav" id="navbar">
+    <a href="#home" class="active">Home</a>
+    <a href="your_report.html" class="active">EDA</a>
+    <a href="#form" class="active"a>Form</a>
+    <a href="#tableau" class="active">Tableau</a>
+    <a href="#metabase" class="active">Metabase</a>
+    <a href="#powerbi" class="active">PowerBI</a>
+    <a href="#datasetpreview" class="active">Dataset Preview</a>
+  </div>
+
+  <script>
+  // When the user scrolls the page, execute myFunction
+  window.onscroll = function() {myFunction()};
+  
+  // Get the navbar
+  var navbar = document.getElementById("navbar");
+  
+  // Get the offset position of the navbar
+  var sticky = navbar.offsetTop;
+  
+  // Add the sticky class to the navbar when you reach its scroll position. Remove "sticky" when you leave the scroll position
+  function myFunction() {
+    if (window.pageYOffset >= sticky) {
+      navbar.classList.add("sticky")
+    } else {
+      navbar.classList.remove("sticky");
+    }
+  }
+  </script>
+
+  <!-- Webpage header and description -->
+
+  <a id="home" data-hs-anchor="true"></a>
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12 jumbotron text-center">
+        <h1>Vehicle Insurance Fraud Modeler</h1>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12 text-center" id="description">
+        <br>
+        <p style="font-size: 22px; font-family: Times New Roman;">
+          Welcome to our vehicle insurance fraud modeler!<br>
+        </p>
+        <p style="font-size: 18px; font-family: Times New Roman;"></p>
+          Submitting the form below will connect to a PostgreSQL database and create a new row with your information.<br>
+          This new row of information can then be run through machine learning models to return a classification prediction for fraudulent vehicle insurance claims.<br>
+        </p>
+
+        <p>Navigate to the bottom of the page:
+          <a href = "#bottom">Click Here</a>
+          </p>
+
+      </div>
+    </div>
+    <br>
+
+    <!-- Form data input and submission -->
+
+    <a id="form" data-hs-anchor="true"></a>
+    <form id="newform" width=1200>
+      <ul>
+       <li>
+         <label for="gender_input">Insured Sex:</label><br>
+         <input type="radio" id="genderMale" name="insured_sex" value = "MALE" required="Yes" checked>Male
+         <input type="radio" id="genderFemale" name="insured_sex" value = "FEMALE" required="Yes">Female
+       </li>
+       <li>
+         <label for="age_input">Age:</label>
+         <input type="number" id="age" name="age" required="Yes" placeholder="Age" min="0">
+       </li>
+        <li>
+         <label for="customer_length_input">Months as a Customer:</label>
+         <input type="number" id="customer_length" name="months_as_customer" required="Yes" placeholder="Months as a Customer" min="0">
+        </li>
+        <li>
+         <label for="incident_state_input">Incident State:</label><br>
+         <input type="radio" id="incident_stateNC" name="incident_state" value = "NC" required="Yes" checked>NC
+         <input type="radio" id="incident_stateNY" name="incident_state" value = "NY" required="Yes">NY
+         <input type="radio" id="incident_stateOH" name="incident_state" value = "OH" required="Yes">OH
+         <input type="radio" id="incident_statePA" name="incident_state" value = "PA" required="Yes">PA
+         <input type="radio" id="incident_stateSC" name="incident_state" value = "SC" required="Yes">SC
+         <input type="radio" id="incident_stateVA" name="incident_state" value = "VA" required="Yes">VA
+         <input type="radio" id="incident_stateWV" name="incident_state" value = "WV" required="Yes">WV
+        </li>
+        <li>
+          <label for="make_input">Auto Make:</label>
+          <input type="text" id="make" name="auto_make" required="Yes" placeholder="Auto Make">
+        </li>
+        <li>
+          <label for="model_input">Auto Model:</label>
+          <input type="text" id="model" name="auto_model" required="Yes" placeholder="Auto Model">
+        </li>
+        <li>
+          <label for="deductible_input">Policy Deductible Amount:</label><br>
+          <input type="radio" id="deductible500" name="policy_deductible" value = 500 required="Yes" checked>$500
+          <input type="radio" id="deductible1000" name="policy_deductible" value = 1000 required="Yes">$1000
+          <input type="radio" id="deductible2000" name="policy_deductible" value = 2000 required="Yes">$2000
+        </li>
+        <li class="button">
+          <input type="submit"></button><br><br>
+          <p id="log"></p>
+        </li>
+      </ul>
+    </form>
+    <br>
+  
+    <!-- button functionality, listener, on-click -->
+
+    <script>
+      function logSubmit(event){
+        log.textContent = `Form Submitted!`;
+        event.preventDefault();
+      }
+
+      var form = document.getElementById('newform');
+      var log = document.getElementById('log');
+
+      form.addEventListener('submit', function handleSubmit(event){
+        event.preventDefault()
+        logSubmit(event)
+
+        var data = new FormData(event.target);
+        var value = Object.fromEntries(data.entries());
+        console.log({value});
+
+        // insured_sex value
+        if(document.getElementById('genderMale').checked){
+          var genderMale = document.getElementById('genderMale').value;
+          console.log(genderMale);
+        };
+        if(document.getElementById('genderFemale').checked){
+          var genderFemale = document.getElementById('genderFemale').value;
+          console.log(genderFemale);
+        };
+
+        // age value
+        var age = document.getElementById('age').value;
+        console.log(age);
+
+        // months_as_customer value
+        var months = document.getElementById('customer_length').value;
+        console.log(months);
+        
+        // incident_state value
+        if(document.getElementById('incident_stateNC').checked){
+          var incidentStateNC = document.getElementById('incident_stateNC').value;
+        console.log(incidentStateNC);
+        };
+        if(document.getElementById('incident_stateNY').checked){
+          var incidentStateNY = document.getElementById('incident_stateNY').value;
+        console.log(incidentStateNY);
+        };
+        if(document.getElementById('incident_stateOH').checked){
+          var incidentStateOH = document.getElementById('incident_stateOH').value;
+        console.log(incidentStateOH);
+        };
+        if(document.getElementById('incident_statePA').checked){
+          var incidentStatePA = document.getElementById('incident_statePA').value;
+        console.log(incidentStatePA);
+        };
+        if(document.getElementById('incident_stateSC').checked){
+          var incidentStateSC = document.getElementById('incident_stateSC').value;
+        console.log(incidentStateSC);
+        };
+        if(document.getElementById('incident_stateVA').checked){
+          var incidentStateVA = document.getElementById('incident_stateVA').value;
+        console.log(incidentStateVA);
+        };
+        if(document.getElementById('incident_stateWV').checked){
+          var incidentStateWV = document.getElementById('incident_stateWV').value;
+        console.log(incidentStateWV);
+        };
+
+        // auto_make value
+        var make = document.getElementById('make').value;
+        console.log(make);
+
+        // auto_model value
+        var model = document.getElementById('model').value;
+        console.log(model);
+
+        // policy_deductible value
+        if(document.getElementById('deductible500').checked){
+        var deductibleFiveHundred = document.getElementById('deductible500').value;
+        console.log(deductibleFiveHundred);
+        };
+        if(document.getElementById('deductible1000').checked){
+        var deductibleOneThousand = document.getElementById('deductible1000').value;
+        console.log(deductibleOneThousand);
+        };
+        if(document.getElementById('deductible2000').checked){
+        var deductibleTwoThousand = document.getElementById('deductible2000').value;
+        console.log(deductibleTwoThousand);
+        };
+
+        // var jsonDatabase = {
+        //   insured_sex: "hi",
+        //   age: "hi",
+        //   months_as_customer: "hi",
+        //   incident_state: "hi",
+        //   auto_make: "hi",
+        //   auto_model: "hi",
+        //   policy_deductible: "hi"
+        // }
+
+        // let jsonDatabaseString = JSON.stringify(jsonDatabase);
+        // console.log(jsonDatabaseString);
+
+        form.reset();
+      });
+      
+    </script>
+
+    <br>
+
+    <!-- Tableau embed -->
+    <a id="tableau" data-hs-anchor="true"></a>
+     <div class="row">
+      <div class="col-md-12 text-center" id="description">
+        <br>
+        <p style="font-size: 22px; font-family: Times New Roman;">
+          Tableau Public Story <a href='https://public.tableau.com/app/profile/derek.huggens/viz/AutoInsuranceFraudModel/AutoInsuranceFraudReportStory'>Dashboard</a>
+        </p><br>
+      </div>
+    </div>
+
+    <div class='tableauPlaceholder' id='viz1647548288406' style='position: relative'><noscript><a href='#'><img alt=' ' src='https:&#47;&#47;public.tableau.com&#47;static&#47;images&#47;Au&#47;AutoInsuranceFraudModel&#47;AutoInsuranceFraudReportStory&#47;1_rss.png' 
+      style='border: none' /></a></noscript><object class='tableauViz'  style='display:none;'><param name='host_url' value='https%3A%2F%2Fpublic.tableau.com%2F' /> <param name='embed_code_version' value='3' /> <param name='site_root' value='' />
+      <param name='name' value='AutoInsuranceFraudModel&#47;AutoInsuranceFraudReportStory' /><param name='tabs' value='yes' /><param name='toolbar' value='yes' />
+      <param name='static_image' value='https:&#47;&#47;public.tableau.com&#47;static&#47;images&#47;Au&#47;AutoInsuranceFraudModel&#47;AutoInsuranceFraudReportStory&#47;1.png' />
+      <param name='animate_transition' value='yes' /><param name='display_static_image' value='yes' /><param name='display_spinner' value='yes' /><param name='display_overlay' value='yes' />
+      <param name='display_count' value='yes' /><param name='language' value='en-US' /></object></div>       
+
+    <script type='text/javascript'>
+      var divElement = document.getElementById('viz1647548288406'); var vizElement = divElement.getElementsByTagName('object')[0]; vizElement.style.width='1016px';vizElement.style.height='1014px';
+      var scriptElement = document.createElement('script'); scriptElement.src = 'https://public.tableau.com/javascripts/api/viz_v1.js'; vizElement.parentNode.insertBefore(scriptElement, vizElement);
+    </script>
+
+    <br>
+
+    <!-- Metabase embed -->
+
+    <a id="metabase" data-hs-anchor="true"></a>
+     <div class="row">
+      <div class="col-md-12 text-center" id="description">
+        <br>
+        <p style="font-size: 22px; font-family: Times New Roman;">
+          Below is an interactive dashboard created with Metabase Open Source Edition.<br> The Metabase software was loaded as an image within a Docker container
+          and our PostgreSQL database was connected to Metabase using local host TCP/IP connections.
+        </p><br>
+      </div>
+    </div>
+
+     <iframe
+    src="http://localhost:3000/public/dashboard/cff3fc6e-92ee-4954-9aeb-b57b9394e44c"
+    frameborder="0"
+    width="1200"
+    height="720"
+    allowtransparency>
+    </iframe>
+    <br><br><br>
+
+    <!-- Power BI embed -->
+
+    <a id="powerbi" data-hs-anchor="true"></a>
+    <div class="row">
+      <div class="col-md-12 text-center" id="description">
+        <br>
+        <p style="font-size: 22px; font-family: Times New Roman;">
+          Below is an interactive dashboard created with Microsoft Power BI.<br>
+        </p><br>
+      </div>
+    </div>
+    
+    <iframe title="Influencers" width="1200" height="720" src="https://app.powerbi.com/view?r=eyJrIjoiYmE3ZTMzMjQtOTBlOS00NmMwLTlhZTYtZmViYjU0N2U2YjJmIiwidCI6IjViMTZlMTgyLTc4YjMtNDEyYy05MTk2LTY4MzQyNjg5ZWViNyIsImMiOjF9&pageName=ReportSection" frameborder="0" allowFullScreen="true"></iframe>
+
+    <a id="bottom" data-hs-anchor="true"></a>
+    <p>Navigate to the top of the page:
+    <a href = "#top">Click Here</a>
+    </p>
+
+</div>
+
+<!-- HTML Table for dataset in JSON format -->
+
+<a id="datasetpreview" data-hs-anchor="true"></a>
+<table class="table table-striped">
+  <tr  class="bg-info">
+      <th>months_as_customer</th>	
+      <th>age</th>
+      <th>policy_number</th>
+      <th>policy_bind_date</th>
+      <th>policy_state</th>
+      <th>policy_csl</th>
+      <th>policy_deductible</th>
+      <th>policy_annual_premium</th>
+      <th>umbrella_limit</th>
+      <th>insured_zip</th>
+      <th>insured_sex</th>
+      <th>insured_education_level</th>
+      <th>insured_occupation</th>
+      <th>insured_hobbies</th>
+      <th>insured_relationship</th>
+      <th>capital_gains</th>
+      <th>capital_loss</th>
+      <th>incident_date</th>
+      <th>incident_type</th>
+      <th>collision_type</th>
+      <th>incident_severity</th>
+      <th>authorities_contacted</th>
+      <th>incident_state</th>
+      <th>incident_city</th>
+      <th>incident_location</th>
+      <th>incident_hour_of_the_day</th>
+      <th>number_of_vehicles_involved</th>
+      <th>property_damage</th>
+      <th>bodily_injuries</th>
+      <th>witnesses</th>
+      <th>police_report_available</th>
+      <th>total_claim_amount</th>
+      <th>injury_claim</th>
+      <th>property_claim</th>
+      <th>vehicle_claim</th>
+      <th>auto_make
+      <th>auto_model</th>
+      <th>auto_year</th>
+      <th>fraud_reported</th>
+  </tr>
+
+  <tbody id="myTable">
+        
+  </tbody>
+</table>
+
+  <!-- Function to create HTML table from JSON -->
+
+  <script type="module">
+  function buildTable(data){
+      var table = document.getElementById('myTable')
+      console.log(data.data.length)
+      for (var i = 0; i < 10; i++){
+        // console.log(data.data[i].age);
+        var row = `<tr>
+                <td>${data.data[i].months_as_customer}</td>
+                <td>${data.data[i].age}</td>
+                <td>${data.data[i].policy_number}</td>
+                <td>${data.data[i].policy_bind_date}</td>
+                <td>${data.data[i].policy_state}</td>
+                <td>${data.data[i].policy_csl}</td>
+                <td>${data.data[i].policy_deductible}</td>
+                <td>${data.data[i].policy_annual_premium}</td>
+                <td>${data.data[i].umbrella_limit}</td>
+                <td>${data.data[i].insured_zip}</td>
+                <td>${data.data[i].insured_sex}</td>
+                <td>${data.data[i].insured_education_level}</td>
+                <td>${data.data[i].insured_occupation}</td>
+                <td>${data.data[i].insured_hobbies}</td>
+                <td>${data.data[i].insured_relationship}</td>
+                <td>${data.data[i].capital_gains}</td>
+                <td>${data.data[i].capital_loss}</td>
+                <td>${data.data[i].incident_date}</td>
+                <td>${data.data[i].incident_type}</td>
+                <td>${data.data[i].collision_type}</td>
+                <td>${data.data[i].incident_severity}</td>
+                <td>${data.data[i].authorities_contacted}</td>
+                <td>${data.data[i].incident_state}</td>
+                <td>${data.data[i].incident_city}</td>
+                <td>${data.data[i].incident_location}</td>
+                <td>${data.data[i].incident_hour_of_the_day}</td>
+                <td>${data.data[i].number_of_vehicles_involved}</td>
+                <td>${data.data[i].property_damage}</td>
+                <td>${data.data[i].bodily_injuries}</td>
+                <td>${data.data[i].witnesses}</td>
+                <td>${data.data[i].police_report_available}</td>
+                <td>${data.data[i].total_claim_amount}</td>
+                <td>${data.data[i].injury_claim}</td>
+                <td>${data.data[i].property_claim}</td>
+                <td>${data.data[i].vehicle_claim}</td>
+                <td>${data.data[i].auto_make}</td>
+                <td>${data.data[i].auto_model}</td>
+                <td>${data.data[i].auto_year}</td>
+                <td>${data.data[i].fraud_reported}</td>
+               </tr>`
+               console.log(row);
+        table.innerHTML += row
+      }
+    }
+
+  // Import the JSON of our vehicle insurance fraud dataset
+
+    let dataJSON = (fetch("insurance_claims.json")
+      .then(response => response.json())
+      .then(data => {
+        console.log(data)
+      buildTable(data)
+      }));
+
+  </script>
+
+  <!-- JS dependencies -->
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.5.0/d3.js"></script>
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  <script src="../static/js/charts.js"></script>
+  <script src="../node-api-postgres/index.js"></script>
+  <script src="../node-api-postgres/queries.js"></script>
+
+
+</body>
+
+</html>
