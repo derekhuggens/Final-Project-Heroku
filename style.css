@@ -47,6 +47,16 @@
   color: white;
 }
 
+/* Button Spacing */
+.btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100px;
+  width: auto;
+  border: 3px solid green;
+}
+
 /* Form CSS */
 
 .flex {
